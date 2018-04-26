@@ -40,7 +40,9 @@ def drawVessels(fileName, preparedImage):
     # to wybielam caly kwadrat step x step
     for i in range(step, len(image) - step, step):
         for j in range(step, len(image[i]) - step, step):
-            if np.mean(preparedImage[i - step : i + step, j - step : j + step]) < np.percentile(preparedImage[max(0, i - halfSquareEdge):min(len(image) - 1, i + halfSquareEdge), max(0, j - halfSquareEdge):min(len(image[i]) - 1, j + halfSquareEdge)], 35):
+            if preparedImage[i, j] < 15:
+                continue
+            if np.mean(preparedImage[i - step : i + step, j - step : j + step]) < np.percentile(preparedImage[max(0, i - halfSquareEdge):min(len(image) - 1, i + halfSquareEdge), max(0, j - halfSquareEdge):min(len(image[i]) - 1, j + halfSquareEdge)], 23):
                 image = whiten(image, i, j, step)
 
     return image
@@ -48,15 +50,12 @@ def drawVessels(fileName, preparedImage):
 def drawSubplot(filePath, ax1, ax2):
     originalImage = cv2.imread(corePath + imagesDir + "01" + imagesEnding, cv2.IMREAD_COLOR)
     originalImage = cv2.cvtColor(originalImage, cv2.COLOR_BGR2RGB)
-
-    mask = cv2.imread(corePath + maskDir + "01" + maskEnding, cv2.IMREAD_GRAYSCALE)
-    _, mask = cv2.threshold(mask, 100, 255, cv2.THRESH_BINARY_INV)
+    image2 = cv2.imread(corePath + imagesDir + "01" + imagesEnding, cv2.IMREAD_GRAYSCALE)
 
     preparedImage = prepareImage(filePath)
     image = drawVessels(filePath, preparedImage)
-    image = mask + image
 
-    ax1.imshow(originalImage)
+    ax1.imshow(image2, cmap='gray')
     ax1.set_xticks([])
     ax1.set_yticks([])
 
